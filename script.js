@@ -24,7 +24,7 @@ if (intro) {
     if (introMessage) introMessage.textContent = "Hello, I’m Paulo.";
       intro.classList.add("is-english");
     }, 1000);
-    window.setTimeout(closeIntro, 90000);
+    window.setTimeout(closeIntro, 900000);
     if (introSkip) introSkip.addEventListener("click", closeIntro);
   }
 }
