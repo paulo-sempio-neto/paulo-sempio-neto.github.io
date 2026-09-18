@@ -19,11 +19,9 @@ if (intro) {
     intro.addEventListener("transitionend", () => intro.remove(), { once: true });
   };
 
-  if (alreadyShown || prefersReducedMotion.matches) {
-    intro.remove();
-  } else {
-    window.setTimeout(() => {
-      if (introMessage) introMessage.textContent = "Hello, I’m Paulo.";
+  if (!alreadyShown) {
+  window.setTimeout(() => {
+    if (introMessage) introMessage.textContent = "Hello, I’m Paulo.";
       intro.classList.add("is-english");
     }, 1000);
     window.setTimeout(closeIntro, 90000);
