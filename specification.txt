@@ -1,31 +1,19 @@
-CS50x 2026 - Homepage
+Portfólio profissional — Paulo Malpice Sêmpio Neto
 
-10 tags HTML utilizadas:
-1. nav
-2. main
-3. section
-4. article
-5. h1
-6. h2
-7. p
-8. a
-9. ul
-10. li
+Estrutura: página principal com seções início, projetos, competências, sobre e
+contato. projetos.html, sobre.html e contato.html preservam endereços antigos,
+redirecionando para as respectivas seções, com links de fallback.
 
-Propriedades CSS utilizadas:
-1. background-color
-2. color
-3. font-family
-4. padding
-5. margin
-6. border-radius
-7. box-shadow
-8. transition
+HTML semântico: header, nav, main, section, article, figure, figcaption,
+details, summary, footer. Idioma pt-BR, descrição e metadados Open Graph.
+CSS: tokens de cor, grid, flexbox, media queries, foco visível e reduced motion.
+JavaScript: ano do rodapé e menu responsivo com estado aria-expanded, Escape
+e gerenciamento de foco. O conteúdo permanece acessível sem JavaScript.
 
-JavaScript:
-JavaScript foi utilizado para exibir mensagens interativas ao clicar nos botões
-e para mostrar automaticamente o ano atual no rodapé.
+Sem bibliotecas, fontes remotas, ferramentas de build ou dependências de CDN.
+Compatível com hospedagem estática no GitHub Pages.
 
-Bootstrap:
-Bootstrap foi utilizado para criar a barra de navegação responsiva, os cartões,
-os botões, o sistema de colunas e os elementos visuais da página.
+O arquivo original do exercício CS50x está preservado em
+ docs/specification-original.txt. Esta versão prioriza o portfólio profissional;
+não foi avaliada como entrega do exercício Homepage do CS50x (que utilizava
+Bootstrap e múltiplas páginas de conteúdo).
