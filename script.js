@@ -20,13 +20,46 @@ if (intro) {
   };
 
   if (!alreadyShown) {
-  window.setTimeout(() => {
-    if (introMessage) introMessage.textContent = "Hello, I’m Paulo.";
-      intro.classList.add("is-english");
-    }, 1000);
-    window.setTimeout(closeIntro, 900000);
-    if (introSkip) introSkip.addEventListener("click", closeIntro);
-  }
+
+  intro.classList.add("is-english");
+
+  const messages = [
+    "Writing clean and maintainable code...",
+    "Building scalable backend solutions...",
+    "Solving problems through technology..."
+  ];
+
+  let messageIndex = 0;
+
+  const typeMessage = () => {
+    if (!introMessage) return;
+
+    const message = messages[messageIndex];
+    let letterIndex = 0;
+
+    introMessage.textContent = "";
+
+    const typing = setInterval(() => {
+      introMessage.textContent += message[letterIndex];
+      letterIndex++;
+
+      if (letterIndex === message.length) {
+        clearInterval(typing);
+
+        setTimeout(() => {
+          messageIndex = (messageIndex + 1) % messages.length;
+          typeMessage();
+        }, 2000);
+      }
+
+    }, 60);
+  };
+
+  setTimeout(typeMessage, 1000);
+
+  window.setTimeout(closeIntro, 900000);
+
+  if (introSkip) introSkip.addEventListener("click", closeIntro);
 }
 
 const year = document.querySelector("#year");
