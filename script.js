@@ -51,7 +51,7 @@ if (intro) {
           typeMessage();
         }, 2000);
       }
-    }
+    
     }, 60);
   };
 
@@ -60,8 +60,8 @@ if (intro) {
   window.setTimeout(closeIntro, 900000);
 
   if (introSkip) introSkip.addEventListener("click", closeIntro);
+  }
 }
-
 const year = document.querySelector("#year");
 if (year) year.textContent = new Date().getFullYear();
 const toggle = document.querySelector(".menu-toggle");
