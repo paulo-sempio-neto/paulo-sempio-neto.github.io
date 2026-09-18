@@ -51,7 +51,7 @@ if (intro) {
           typeMessage();
         }, 2000);
       }
-
+    }
     }, 60);
   };
 
