@@ -1,5 +1,36 @@
 // O conteúdo e os links continuam acessíveis sem JavaScript.
 document.documentElement.classList.add("js");
+
+// Abertura breve: aparece uma vez por aba e respeita redução de movimento.
+const intro = document.querySelector("#intro-screen");
+const introMessage = document.querySelector("#intro-message");
+const introSkip = document.querySelector("#intro-skip");
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+if (intro) {
+  const alreadyShown = sessionStorage.getItem("paulo-portfolio-intro") === "shown";
+  let closing = false;
+
+  const closeIntro = () => {
+    if (closing) return;
+    closing = true;
+    sessionStorage.setItem("paulo-portfolio-intro", "shown");
+    intro.classList.add("is-leaving");
+    intro.addEventListener("transitionend", () => intro.remove(), { once: true });
+  };
+
+  if (alreadyShown || prefersReducedMotion.matches) {
+    intro.remove();
+  } else {
+    window.setTimeout(() => {
+      if (introMessage) introMessage.textContent = "Hello, I’m Paulo.";
+      intro.classList.add("is-english");
+    }, 1000);
+    window.setTimeout(closeIntro, 2000);
+    if (introSkip) introSkip.addEventListener("click", closeIntro);
+  }
+}
+
 const year = document.querySelector("#year");
 if (year) year.textContent = new Date().getFullYear();
 const toggle = document.querySelector(".menu-toggle");
