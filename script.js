@@ -37,7 +37,7 @@ if (intro) {
     const message = messages[messageIndex];
     let letterIndex = 0;
 
-    introMessage.textContent = "";
+    introLoading.textContent = "";
 
     const typing = setInterval(() => {
       introLoading.textContent += message[letterIndex];
