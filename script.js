@@ -3,7 +3,7 @@ document.documentElement.classList.add("js");
 
 // Abertura breve: aparece uma vez por aba e respeita redução de movimento.
 const intro = document.querySelector("#intro-screen");
-const introMessage = document.querySelector("#intro-message");
+const introLoading = document.querySelector("#intro-loading");
 const introSkip = document.querySelector("#intro-skip");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -32,7 +32,7 @@ if (intro) {
   let messageIndex = 0;
 
   const typeMessage = () => {
-    if (!introMessage) return;
+    if (!introLoading) return;
 
     const message = messages[messageIndex];
     let letterIndex = 0;
@@ -40,7 +40,7 @@ if (intro) {
     introMessage.textContent = "";
 
     const typing = setInterval(() => {
-      introMessage.textContent += message[letterIndex];
+      introLoading.textContent += message[letterIndex];
       letterIndex++;
 
       if (letterIndex === message.length) {
