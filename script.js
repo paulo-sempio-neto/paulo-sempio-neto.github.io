@@ -145,7 +145,7 @@ if (intro) {
 
     schedule(() => {
       intro.classList.add("is-brand-visible");
-      setIntroStatus("Apresentando Paulo Sêmpio Neto, Full Stack Developer.");
+      setIntroStatus("Apresentando Paulo Sêmpio Neto, desenvolvedor full stack em formação.");
     }, 1220);
 
     schedule(() => {
