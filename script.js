@@ -86,6 +86,7 @@ if (intro) {
     setPageInert(false);
     intro.remove();
     restoreFocus();
+    document.dispatchEvent(new Event("portfolio:ready"));
   };
 
   const closeIntro = ({ immediate = false, focusContent = false } = {}) => {
@@ -166,6 +167,66 @@ if (intro) {
     };
     prefersReducedMotion.addEventListener?.("change", handleMotionChange, { once: true });
   }
+}
+
+// Melhoria progressiva: nenhum conteúdo fica oculto à espera do observador.
+// Cada bloco aparece uma vez; somente opacity e transform são animados.
+const initSectionReveals = () => {
+  if (prefersReducedMotion.matches || !("IntersectionObserver" in window) ||
+      !("animate" in Element.prototype)) return;
+
+  const animations = new Map();
+  const targets = document.querySelectorAll(
+    ".section-heading, .case-study, .capability-list>li, .about>div, .contact"
+  );
+  const observer = new IntersectionObserver((entries) => {
+    let order = 0;
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      const target = entry.target;
+      observer.unobserve(target);
+      // Âncoras e foco de teclado têm prioridade sobre a apresentação.
+      if (entry.boundingClientRect.top < 0 || target.contains(document.activeElement)) return;
+      const animation = target.animate([
+        { opacity: 0, transform: "translateY(14px)" },
+        { opacity: 1, transform: "translateY(0)" }
+      ], {
+        duration: 480,
+        delay: Math.min(order++ * 70, 210),
+        easing: "cubic-bezier(.22,1,.36,1)",
+        fill: "backwards"
+      });
+      animations.set(target, animation);
+      animation.onfinish = () => animations.delete(target);
+      animation.oncancel = () => animations.delete(target);
+    });
+  }, { threshold: 0, rootMargin: "0px 0px -24px 0px" });
+
+  targets.forEach((target) => observer.observe(target));
+
+  document.addEventListener("focusin", (event) => {
+    targets.forEach((target) => {
+      if (!target.contains(event.target)) return;
+      observer.unobserve(target);
+      animations.get(target)?.cancel();
+    });
+  });
+
+  const finishReveals = () => {
+    observer.disconnect();
+    animations.forEach((animation) => animation.cancel());
+    animations.clear();
+  };
+  prefersReducedMotion.addEventListener("change", (event) => {
+    if (event.matches) finishReveals();
+  });
+  window.addEventListener("beforeprint", finishReveals);
+};
+
+if (intro?.isConnected) {
+  document.addEventListener("portfolio:ready", initSectionReveals, { once: true });
+} else {
+  initSectionReveals();
 }
 const year = document.querySelector("#year");
 if (year) year.textContent = new Date().getFullYear();

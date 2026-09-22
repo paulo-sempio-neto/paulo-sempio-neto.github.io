@@ -801,10 +801,8 @@ nav a {
   border-radius:6px;
   font-size:13px;
   font-weight:700;
-  transition:background .18s ease,transform .18s ease;
+  transition:background .2s ease,border-color .2s ease,box-shadow .2s ease,transform .2s ease;
 }
-
-.button:hover { transform:translateY(-2px); }
 
 .primary {
   border:1px solid var(--accent);
@@ -957,6 +955,7 @@ nav a {
   border:1px solid #334450;
   border-radius:16px;
   background:#111921;
+  transition:border-color .25s ease,box-shadow .25s ease;
 }
 
 .case-study+.case-study { margin-top:28px; }
@@ -1036,60 +1035,110 @@ nav a {
   letter-spacing:-.025em;
 }
 
+.architecture-diagram {
+  display:grid;
+  grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);
+  align-items:center;
+  gap:clamp(28px,5vw,64px);
+  margin-top:28px;
+  padding:28px;
+  border:1px solid #314552;
+  border-radius:10px;
+  background:linear-gradient(135deg,rgba(102,217,239,.035),transparent 65%),#0e161e;
+}
+
+.diagram-summary {
+  margin-top:13px;
+  color:var(--text);
+  font-size:clamp(20px,2.3vw,28px);
+  line-height:1.25;
+  letter-spacing:-.035em;
+}
+
+.diagram-note {
+  margin-top:20px;
+  padding-left:13px;
+  border-left:2px solid #536574;
+  font-size:11px;
+  line-height:1.8;
+}
+
 .architecture-flow {
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:0;
-  margin:29px 0 0;
+  gap:25px;
+  margin:0;
   padding:0;
   list-style:none;
-  border:1px solid #314552;
-  border-radius:8px;
-  overflow:hidden;
 }
 
 .architecture-flow li {
   position:relative;
-  min-height:92px;
-  padding:18px;
-  background:#101820;
+  display:grid;
+  grid-template-columns:24px minmax(0,1fr) auto;
+  align-items:center;
+  gap:12px;
+  min-height:70px;
+  padding:13px 16px;
+  border:1px solid #3b5968;
+  border-radius:7px;
+  background:#14222c;
 }
 
-.architecture-flow li+li { border-left:1px solid #314552; }
+/* Conectores decorativos: a lista preserva a ordem de leitura. */
+.architecture-flow li:not(:last-child):before {
+  content:"";
+  position:absolute;
+  top:100%;
+  left:27px;
+  height:25px;
+  border-left:1px solid #5e8799;
+}
 
 .architecture-flow li:not(:last-child):after {
-  content:"→";
+  content:"";
   position:absolute;
-  z-index:1;
-  top:50%;
-  right:-8px;
-  display:grid;
-  width:16px;
-  height:16px;
-  place-items:center;
-  border:1px solid #476473;
-  border-radius:50%;
-  background:#15242d;
-  color:var(--accent);
-  font-size:10px;
-  transform:translateY(-50%);
+  top:calc(100% + 17px);
+  left:24px;
+  width:7px;
+  height:7px;
+  border-right:1px solid #5e8799;
+  border-bottom:1px solid #5e8799;
+  transform:rotate(45deg);
 }
 
-.architecture-flow span {
-  display:block;
-  color:#83a0b0;
-  font-family:Consolas,"Liberation Mono",monospace;
-  font-size:9px;
-  letter-spacing:.09em;
-  text-transform:uppercase;
+.architecture-flow .flow-planned {
+  border-style:dashed;
+  border-color:#536574;
+  background:#111b24;
+}
+
+.flow-number {
+  color:var(--accent);
+  font:10px Consolas,"Liberation Mono",monospace;
 }
 
 .architecture-flow strong {
   display:block;
-  margin-top:10px;
-  color:#dce8ef;
+  color:#e1edf4;
   font-size:13px;
-  line-height:1.4;
+  font-weight:600;
+}
+
+.architecture-flow div>span {
+  display:block;
+  margin-top:3px;
+  color:#a3b5c4;
+  font-size:11px;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+
+.flow-state {
+  padding:3px 6px;
+  border:1px solid #465968;
+  border-radius:4px;
+  color:#b7c6d2;
+  font:9px Consolas,"Liberation Mono",monospace;
 }
 
 .architecture-caption {
@@ -1146,6 +1195,7 @@ nav a {
   color:#c3d0dc;
   font-family:Consolas,"Liberation Mono",monospace;
   font-size:10px;
+  transition:color .2s ease,border-color .2s ease,background .2s ease,transform .2s ease;
 }
 
 .case-note {
@@ -1330,6 +1380,63 @@ nav a {
 .site-footer a {
   padding:8px 0;
   color:#b5c2cf;
+}
+
+/* Feedback discreto, também disponível pelo teclado. */
+nav a,.text-link,.small-link,.all-projects,.social-links a,.email-link,.site-footer a {
+  transition:color .2s ease;
+}
+
+.button>span,.text-link>span,.nav-contact>span,.all-projects>span {
+  display:inline-block;
+  transition:transform .2s ease;
+}
+
+.menu-toggle {
+  cursor:pointer;
+  transition:background .2s ease,border-color .2s ease;
+}
+
+.menu-toggle[aria-expanded="true"] {
+  border-color:var(--accent);
+  background:var(--surface-raised);
+}
+
+.case-study:focus-within {
+  border-color:#679bad;
+  box-shadow:0 12px 32px rgba(0,0,0,.16);
+}
+
+.button:focus-visible {
+  box-shadow:0 0 0 4px rgba(102,217,239,.12);
+}
+
+@media(hover:hover) and (pointer:fine) {
+  .case-study:hover {
+    border-color:#679bad;
+    box-shadow:0 12px 32px rgba(0,0,0,.22);
+  }
+
+  .tags li:hover {
+    color:#e0f7fc;
+    border-color:#679bad;
+    background:#1b303b;
+  }
+}
+
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
+  .button:hover { transform:translateY(-2px); }
+  .tags li:hover { transform:translateY(-2px); }
+  .text-link:hover>span,.nav-contact:hover>span,.all-projects:hover>span { transform:translate(2px,-2px); }
+  .button:hover>span { transform:translateY(2px); }
+}
+
+@media(prefers-reduced-motion:no-preference) {
+  .button:active { transform:translateY(0) scale(.985); }
+}
+
+@media print {
+  .intro-screen,.site-header,.skip-link { display:none!important; }
 }
 
 /* Layouts adaptados a tablet e celular. */
@@ -1726,19 +1833,25 @@ nav a {
     font-size:17px;
   }
 
-  .architecture-flow {
+  .architecture-diagram {
     grid-template-columns:1fr;
-    margin-top:21px;
+    padding:20px 16px;
+    gap:24px;
   }
 
-  .architecture-flow li+li {
-    border-top:1px solid var(--border);
-    border-left:0;
+  .architecture-flow li {
+    grid-template-columns:20px minmax(0,1fr);
+    gap:5px 10px;
+    padding:12px;
   }
 
-  .architecture-flow li:after {
-    display:none;
+  .flow-state {
+    grid-column:2;
+    justify-self:start;
   }
+
+  .architecture-flow li:not(:last-child):before { left:22px; }
+  .architecture-flow li:not(:last-child):after { left:19px; }
 
   .case-columns {
     grid-template-columns:1fr;

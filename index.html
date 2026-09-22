@@ -297,13 +297,21 @@
                 <p class="eyebrow">ARQUITETURA TÉCNICA</p>
                 <h4 id="pms-architecture-title">Responsabilidades separadas para evoluir sem acoplar.</h4>
               </div>
-              <ol class="architecture-flow">
-                <li><span>Entrada</span><strong>CLI + clientes REST</strong></li>
-                <li><span>API</span><strong>FastAPI + schemas Pydantic</strong></li>
-                <li><span>Domínio</span><strong>product_service.py</strong></li>
-                <li><span>Dados</span><strong>database.py + SQLite</strong></li>
-              </ol>
-              <p class="architecture-caption">A API, a lógica de produto e o acesso aos dados ficam em módulos distintos. É uma separação de responsabilidades que prepara o terreno para uma abstração formal de repositório.</p>
+              <figure class="architecture-diagram" aria-labelledby="pms-flow-title">
+                <figcaption>
+                  <p class="eyebrow" id="pms-flow-title">DA INTERFACE AOS DADOS</p>
+                  <p class="diagram-summary">Um percurso.<br>Cinco responsabilidades.</p>
+                  <p class="architecture-caption">A API, a lógica de produto e o acesso aos dados ficam em módulos distintos. É uma separação de responsabilidades que prepara o terreno para uma abstração formal de repositório.</p>
+                  <p class="diagram-note">Mapa de camadas: a UI própria e o Repository pattern são evoluções previstas. Hoje, a entrada usa CLI e clientes REST.</p>
+                </figcaption>
+                <ol class="architecture-flow" role="list" aria-label="Camadas do Product Management System">
+                  <li class="flow-planned"><span class="flow-number" aria-hidden="true">01</span><div><strong lang="en">Frontend/UI</strong><span>Interface própria · hoje: CLI e clientes REST</span></div><span class="flow-state">Planejado</span></li>
+                  <li><span class="flow-number" aria-hidden="true">02</span><div><strong lang="en">API Layer</strong><span>FastAPI + schemas Pydantic</span></div></li>
+                  <li><span class="flow-number" aria-hidden="true">03</span><div><strong lang="en">Business Logic</strong><span>product_service.py</span></div></li>
+                  <li class="flow-planned"><span class="flow-number" aria-hidden="true">04</span><div><strong lang="en">Repository</strong><span>Acesso atual: database.py · abstração formal prevista</span></div><span class="flow-state">Planejado</span></li>
+                  <li><span class="flow-number" aria-hidden="true">05</span><div><strong lang="en">Database</strong><span>SQLite · persistência local</span></div></li>
+                </ol>
+              </figure>
             </section>
             <div class="case-columns">
               <section>
@@ -365,6 +373,20 @@
                 <p class="eyebrow">SUPERFÍCIE DA API</p>
                 <h4 id="sentinel-architecture-title">Endpoints pequenos, responsabilidades explícitas.</h4>
               </div>
+              <figure class="architecture-diagram" aria-labelledby="sentinel-flow-title">
+                <figcaption>
+                  <p class="eyebrow" id="sentinel-flow-title">DO ENDPOINT À VISIBILIDADE</p>
+                  <p class="diagram-summary">O caminho para<br>observar serviços.</p>
+                  <p class="architecture-caption">O cadastro validado é a base atual. O fluxo mostra a evolução prevista para monitorar disponibilidade e reunir métricas.</p>
+                  <p class="diagram-note">Monitoramento, métricas e saúde dos endpoints estão planejados. A rota /health informa apenas o estado do próprio serviço.</p>
+                </figcaption>
+                <ol class="architecture-flow" role="list" aria-label="Fluxo de evolução do API Sentinel">
+                  <li><span class="flow-number" aria-hidden="true">01</span><div><strong lang="en">Endpoint</strong><span>Cadastro e validação de URLs</span></div></li>
+                  <li class="flow-planned"><span class="flow-number" aria-hidden="true">02</span><div><strong lang="en">Monitoring</strong><span>Verificações de disponibilidade</span></div><span class="flow-state">Planejado</span></li>
+                  <li class="flow-planned"><span class="flow-number" aria-hidden="true">03</span><div><strong lang="en">Metrics</strong><span>Histórico e latência</span></div><span class="flow-state">Planejado</span></li>
+                  <li class="flow-planned"><span class="flow-number" aria-hidden="true">04</span><div><strong lang="en">Health Status</strong><span>Saúde dos endpoints monitorados</span></div><span class="flow-state">Planejado</span></li>
+                </ol>
+              </figure>
               <div class="endpoint-table">
                 <div><span class="method get">GET</span><code>/health</code><span>Estado do serviço</span></div>
                 <div><span class="method post">POST</span><code>/endpoints</code><span>Cadastro validado</span></div>
