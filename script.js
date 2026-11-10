@@ -1,272 +1,258 @@
-// O conteúdo e os links continuam acessíveis sem JavaScript.
+// Portfólio — Paulo Sêmpio Neto
+// Todo o conteúdo e os links funcionam sem JavaScript; aqui ficam apenas
+// o menu móvel, a troca de projeto no topo e o movimento das camadas.
 document.documentElement.classList.add("js");
 
-// Abertura curta, finita e opcional: aparece uma vez por aba.
-const intro = document.querySelector("#intro-screen");
-const introSkip = document.querySelector("#intro-skip");
-const introStatus = document.querySelector("#intro-status");
-const introPhoto = document.querySelector(".intro-photo");
-const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 
-if (intro) {
-  const storageKey = "paulo-portfolio-intro";
-  const bootLines = [...intro.querySelectorAll("[data-boot-line]")];
-  const pageRegions = [
-    document.querySelector(".skip-link"),
-    document.querySelector(".site-header"),
-    document.querySelector("main"),
-    document.querySelector(".site-footer")
-  ].filter(Boolean);
-  const timers = [];
-  let closing = false;
-  let removed = false;
-  let transitionHandler;
-  let keydownHandler;
-  let returnFocus = false;
+/* ── Ano do rodapé ── */
+const year = document.querySelector("#year");
+if (year) year.textContent = String(new Date().getFullYear());
 
-  const schedule = (callback, delay) => {
-    const timer = window.setTimeout(callback, delay);
-    timers.push(timer);
-    return timer;
-  };
+/* ── Cabeçalho: fundo ao rolar e recolhe ao descer ── */
+const header = document.querySelector(".site-header");
+let lastScrollY = window.scrollY;
 
-  const clearTimers = () => {
-    timers.forEach((timer) => window.clearTimeout(timer));
-    timers.length = 0;
-  };
-
-  const readIntroState = () => {
-    try {
-      return window.sessionStorage.getItem(storageKey) === "shown";
-    } catch {
-      return false;
-    }
-  };
-
-  const saveIntroState = () => {
-    try {
-      window.sessionStorage.setItem(storageKey, "shown");
-    } catch {
-      // O portfólio continua funcional quando o armazenamento está indisponível.
-    }
-  };
-
-  const setPageInert = (isInert) => {
-    pageRegions.forEach((region) => {
-      if (isInert) {
-        region.setAttribute("aria-hidden", "true");
-        if ("inert" in region) region.inert = true;
-        return;
-      }
-
-      region.removeAttribute("aria-hidden");
-      if ("inert" in region) region.inert = false;
-    });
-  };
-
-  const setIntroStatus = (message) => {
-    if (introStatus) introStatus.textContent = message;
-  };
-
-  const restoreFocus = () => {
-    if (!returnFocus) return;
-    const main = document.querySelector("#conteudo");
-    if (!main) return;
-    main.setAttribute("tabindex", "-1");
-    main.focus({ preventScroll: true });
-    main.addEventListener("blur", () => main.removeAttribute("tabindex"), { once: true });
-  };
-
-  const removeIntro = () => {
-    if (removed) return;
-    removed = true;
-    clearTimers();
-    if (transitionHandler) intro.removeEventListener("transitionend", transitionHandler);
-    if (keydownHandler) document.removeEventListener("keydown", keydownHandler);
-    setPageInert(false);
-    intro.remove();
-    restoreFocus();
-    document.dispatchEvent(new Event("portfolio:ready"));
-  };
-
-  const closeIntro = ({ immediate = false, focusContent = false } = {}) => {
-    if (closing) return;
-    closing = true;
-    returnFocus = focusContent;
-    saveIntroState();
-    clearTimers();
-    setIntroStatus("Portfólio carregado.");
-
-    if (immediate || prefersReducedMotion.matches) {
-      removeIntro();
-      return;
-    }
-
-    intro.classList.add("is-leaving");
-    transitionHandler = (event) => {
-      if (event.target === intro && event.propertyName === "opacity") removeIntro();
-    };
-    intro.addEventListener("transitionend", transitionHandler);
-    schedule(removeIntro, 700);
-  };
-
-  const hideBrokenPhoto = () => {
-    if (introPhoto) introPhoto.classList.add("has-error");
-  };
-
-  if (introPhoto) {
-    introPhoto.addEventListener("error", hideBrokenPhoto, { once: true });
-    if (introPhoto.complete && introPhoto.naturalWidth === 0) hideBrokenPhoto();
-  }
-
-  const shouldBypassIntro = readIntroState() || prefersReducedMotion.matches || Boolean(window.location.hash);
-
-  if (shouldBypassIntro) {
-    closeIntro({ immediate: true });
-  } else {
-    setPageInert(true);
-    intro.classList.add("is-active");
-    intro.focus({ preventScroll: true });
-
-    const bootSteps = [
-      "Inicializando o portfólio.",
-      "Carregando ambiente de frontend.",
-      "Conectando serviços de backend.",
-      "Conectando bancos de dados.",
-      "Executando verificações de qualidade.",
-      "Sistema online."
-    ];
-
-    bootLines.forEach((line, index) => {
-      schedule(() => {
-        line.classList.add("is-complete");
-        setIntroStatus(bootSteps[index]);
-      }, 100 + (index * 205));
-    });
-
-    schedule(() => {
-      intro.classList.add("is-brand-visible");
-      setIntroStatus("Apresentando Paulo Sêmpio Neto, desenvolvedor full stack em formação.");
-    }, 1220);
-
-    schedule(() => {
-      intro.classList.add("is-stack-visible");
-      setIntroStatus("Tecnologias carregadas. Portfólio pronto.");
-    }, 1580);
-
-    schedule(() => closeIntro(), 3950);
-
-    introSkip?.addEventListener("click", () => closeIntro({ focusContent: true }));
-    keydownHandler = (event) => {
-      if (event.key === "Escape") closeIntro({ focusContent: true });
-    };
-    document.addEventListener("keydown", keydownHandler);
-
-    const handleMotionChange = (event) => {
-      if (event.matches) closeIntro({ immediate: true });
-    };
-    prefersReducedMotion.addEventListener?.("change", handleMotionChange, { once: true });
-  }
+function updateHeader() {
+  if (!header) return;
+  const y = window.scrollY;
+  header.classList.toggle("is-scrolled", y > 24);
+  const menuOpen = header.querySelector("#navigation.is-open");
+  const goingDown = y > lastScrollY && y > 480;
+  header.classList.toggle("is-hidden", goingDown && !menuOpen && !header.contains(document.activeElement));
+  lastScrollY = y;
 }
 
-// Melhoria progressiva: nenhum conteúdo fica oculto à espera do observador.
-// Cada bloco aparece uma vez; somente opacity e transform são animados.
-const initSectionReveals = () => {
-  if (prefersReducedMotion.matches || !("IntersectionObserver" in window) ||
-      !("animate" in Element.prototype)) return;
+/* ── Menu móvel ── */
+const menuToggle = document.querySelector(".menu-toggle");
+const navigation = document.querySelector("#navigation");
 
-  const animations = new Map();
-  const targets = document.querySelectorAll(
-    ".section-heading, .case-study, .capability-list>li, .about>div, .contact"
-  );
+if (menuToggle && navigation) {
+  menuToggle.hidden = false;
+
+  const setMenu = (open, { returnFocus = false } = {}) => {
+    menuToggle.setAttribute("aria-expanded", String(open));
+    navigation.classList.toggle("is-open", open);
+    if (open) navigation.querySelector("a")?.focus();
+    if (!open && returnFocus) menuToggle.focus();
+  };
+
+  menuToggle.addEventListener("click", () => {
+    setMenu(menuToggle.getAttribute("aria-expanded") !== "true");
+  });
+
+  navigation.addEventListener("click", (event) => {
+    if (event.target.closest("a")) setMenu(false);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && navigation.classList.contains("is-open")) {
+      setMenu(false, { returnFocus: true });
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (navigation.classList.contains("is-open") && !header.contains(event.target)) setMenu(false);
+  });
+}
+
+/* ── Topo: trocar o projeto mostrado nas camadas ── */
+const heroStack = document.querySelector('[data-stack="hero"]');
+const heroCaption = document.querySelector(".hero-caption");
+const heroTabs = [...document.querySelectorAll(".hero-tab")];
+let swapTimer;
+
+function showProject(id) {
+  const template = document.querySelector(`template[data-stack-template="${id}"]`);
+  if (!heroStack || !template) return;
+
+  heroTabs.forEach((tab) => tab.setAttribute("aria-pressed", String(tab.dataset.project === id)));
+
+  const apply = () => {
+    heroStack.querySelector(".stack-scene")?.replaceWith(template.content.firstElementChild.cloneNode(true));
+    if (heroCaption) {
+      heroCaption.innerHTML = "";
+      const name = document.createElement("strong");
+      name.textContent = template.dataset.name;
+      heroCaption.append(name, ` ${template.dataset.kind}`);
+    }
+    requestAnimationFrame(() => heroStack.classList.remove("is-swapping"));
+  };
+
+  window.clearTimeout(swapTimer);
+  if (reducedMotion.matches) {
+    apply();
+    return;
+  }
+  heroStack.classList.add("is-swapping");
+  swapTimer = window.setTimeout(apply, 280);
+}
+
+heroTabs.forEach((tab) => {
+  tab.addEventListener("click", () => showProject(tab.dataset.project));
+});
+
+// Pré-carrega as telas dos outros projetos quando o navegador estiver livre.
+const warm = () => {
+  document.querySelectorAll("template[data-stack-template]").forEach((template) => {
+    const img = template.content.querySelector("img");
+    if (img) new Image().src = img.getAttribute("src");
+  });
+};
+if ("requestIdleCallback" in window) window.requestIdleCallback(warm, { timeout: 3000 });
+else window.setTimeout(warm, 2000);
+
+/* ── Topo: inclinação leve seguindo o mouse ── */
+if (heroStack && !reducedMotion.matches) {
+  let targetX = 0;
+  let targetY = 0;
+  let currentX = 0;
+  let currentY = 0;
+  let tiltFrame = 0;
+
+  const animateTilt = () => {
+    currentX += (targetX - currentX) * 0.08;
+    currentY += (targetY - currentY) * 0.08;
+    heroStack.style.setProperty("--rz", `${(currentX * 7).toFixed(2)}deg`);
+    heroStack.style.setProperty("--rx", `${(currentY * -6).toFixed(2)}deg`);
+    if (Math.abs(targetX - currentX) > 0.001 || Math.abs(targetY - currentY) > 0.001) {
+      tiltFrame = requestAnimationFrame(animateTilt);
+    } else {
+      tiltFrame = 0;
+    }
+  };
+
+  window.addEventListener("pointermove", (event) => {
+    if (event.pointerType !== "mouse") return;
+    targetX = event.clientX / window.innerWidth - 0.5;
+    targetY = event.clientY / window.innerHeight - 0.5;
+    if (!tiltFrame) tiltFrame = requestAnimationFrame(animateTilt);
+  }, { passive: true });
+}
+
+/* ── Projetos: a tela se desmonta em camadas conforme a rolagem ── */
+const scrollStacks = [...document.querySelectorAll('[data-stack="scroll"]')];
+const visibleStacks = new Set();
+
+function updateScrollStacks() {
+  const viewport = window.innerHeight;
+  visibleStacks.forEach((stack) => {
+    const rect = stack.getBoundingClientRect();
+    // 0 quando o topo entra pela base da tela; 1 quando chega a 30% do topo.
+    const progress = clamp((viewport - rect.top) / (viewport * 0.75));
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const tilt = clamp(eased * 1.6);
+    const separation = clamp((eased - 0.35) / 0.65);
+    stack.style.setProperty("--tilt", tilt.toFixed(3));
+    stack.style.setProperty("--p", separation.toFixed(3));
+  });
+}
+
+if (scrollStacks.length && !reducedMotion.matches && "IntersectionObserver" in window) {
   const observer = new IntersectionObserver((entries) => {
-    let order = 0;
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) visibleStacks.add(entry.target);
+      else visibleStacks.delete(entry.target);
+    });
+    requestFrame();
+  }, { rootMargin: "20% 0px" });
+  scrollStacks.forEach((stack) => observer.observe(stack));
+} else {
+  scrollStacks.forEach((stack) => {
+    stack.style.setProperty("--tilt", "1");
+    stack.style.setProperty("--p", "1");
+  });
+}
+
+/* ── Um único laço de quadros para a rolagem ── */
+let frameRequested = false;
+
+function onFrame() {
+  frameRequested = false;
+  updateHeader();
+  updateScrollStacks();
+}
+
+function requestFrame() {
+  if (frameRequested) return;
+  frameRequested = true;
+  requestAnimationFrame(onFrame);
+}
+
+window.addEventListener("scroll", requestFrame, { passive: true });
+window.addEventListener("resize", requestFrame);
+requestFrame();
+
+/* ── Ao vivo: a camada de interface mostra o site publicado de verdade ──
+ * A captura aparece na hora; quando o site real termina de carregar dentro
+ * da camada, ele entra por cima. Só em telas grandes, sem economia de dados,
+ * e apenas para projetos que permitem ser exibidos dentro de outro site.
+ */
+const BASE_WIDTH = 1440;
+const BASE_HEIGHT = 900;
+const connection = navigator.connection;
+const canGoLive =
+  window.matchMedia("(min-width: 1024px) and (pointer: fine)").matches &&
+  !(connection && connection.saveData);
+
+const resizeObserver = "ResizeObserver" in window
+  ? new ResizeObserver((entries) => {
+      entries.forEach((entry) => {
+        entry.target.style.setProperty("--live-scale", String(entry.contentRect.width / BASE_WIDTH));
+      });
+    })
+  : null;
+
+function goLive(layer) {
+  if (!canGoLive || layer.dataset.liveState) return;
+  const src = layer.dataset.liveSrc;
+  if (!src) return;
+  layer.dataset.liveState = "loading";
+
+  const frame = document.createElement("iframe");
+  frame.className = "live-frame";
+  frame.src = src;
+  frame.title = layer.dataset.liveTitle || "Projeto ao vivo";
+  frame.width = String(BASE_WIDTH);
+  frame.height = String(BASE_HEIGHT);
+  frame.loading = "lazy";
+  frame.tabIndex = -1;
+  frame.setAttribute("aria-hidden", "true");
+  frame.setAttribute("referrerpolicy", "no-referrer");
+  frame.setAttribute("sandbox", "allow-scripts allow-same-origin");
+
+  const badge = document.createElement("span");
+  badge.className = "live-badge";
+  badge.setAttribute("aria-hidden", "true");
+  badge.textContent = "Ao vivo";
+
+  frame.addEventListener("load", () => {
+    // Dá tempo para o aplicativo pintar a primeira tela antes de aparecer.
+    window.setTimeout(() => {
+      layer.dataset.liveState = "ready";
+    }, 1800);
+  });
+
+  layer.style.setProperty("--live-scale", String(layer.clientWidth / BASE_WIDTH));
+  resizeObserver?.observe(layer);
+  layer.prepend(frame);
+  layer.append(badge);
+}
+
+if (canGoLive && "IntersectionObserver" in window) {
+  const liveObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
-      const target = entry.target;
-      observer.unobserve(target);
-      // Âncoras e foco de teclado têm prioridade sobre a apresentação.
-      if (entry.boundingClientRect.top < 0 || target.contains(document.activeElement)) return;
-      const animation = target.animate([
-        { opacity: 0, transform: "translateY(14px)" },
-        { opacity: 1, transform: "translateY(0)" }
-      ], {
-        duration: 480,
-        delay: Math.min(order++ * 70, 210),
-        easing: "cubic-bezier(.22,1,.36,1)",
-        fill: "backwards"
-      });
-      animations.set(target, animation);
-      animation.onfinish = () => animations.delete(target);
-      animation.oncancel = () => animations.delete(target);
+      entry.target.querySelectorAll("[data-live-src]").forEach(goLive);
     });
-  }, { threshold: 0, rootMargin: "0px 0px -24px 0px" });
+  }, { rootMargin: "25% 0px" });
 
-  targets.forEach((target) => observer.observe(target));
-
-  document.addEventListener("focusin", (event) => {
-    targets.forEach((target) => {
-      if (!target.contains(event.target)) return;
-      observer.unobserve(target);
-      animations.get(target)?.cancel();
-    });
-  });
-
-  const finishReveals = () => {
-    observer.disconnect();
-    animations.forEach((animation) => animation.cancel());
-    animations.clear();
-  };
-  prefersReducedMotion.addEventListener("change", (event) => {
-    if (event.matches) finishReveals();
-  });
-  window.addEventListener("beforeprint", finishReveals);
-};
-
-if (intro?.isConnected) {
-  document.addEventListener("portfolio:ready", initSectionReveals, { once: true });
-} else {
-  initSectionReveals();
-}
-const year = document.querySelector("#year");
-if (year) year.textContent = new Date().getFullYear();
-const toggle = document.querySelector(".menu-toggle");
-const navigation = document.querySelector("#navigation");
-if (toggle && navigation) {
-  const mobile = window.matchMedia("(max-width: 760px)");
-  const closeMenu = () => {
-    navigation.classList.remove("is-open");
-    toggle.setAttribute("aria-expanded", "false");
-  };
-  const syncMenu = () => {
-    const focused = document.activeElement;
-    closeMenu();
-    toggle.hidden = !mobile.matches;
-    if (mobile.matches && navigation.contains(focused)) toggle.focus();
-    if (!mobile.matches && focused === toggle) navigation.querySelector("a").focus();
-  };
-  syncMenu();
-  mobile.addEventListener("change", syncMenu);
-  toggle.addEventListener("click", () => {
-    const open = toggle.getAttribute("aria-expanded") !== "true";
-    toggle.setAttribute("aria-expanded", String(open));
-    navigation.classList.toggle("is-open", open);
-  });
-  navigation.addEventListener("click", (event) => {
-    const link = event.target.closest("a");
-    if (!link || !mobile.matches) return;
-    closeMenu();
-    const section = document.querySelector(link.getAttribute("href"));
-    if (section) {
-      section.setAttribute("tabindex", "-1");
-      section.focus({ preventScroll: true });
-      section.addEventListener("blur", () => section.removeAttribute("tabindex"), { once: true });
-    }
-  });
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") {
-      closeMenu();
-      toggle.focus();
-    }
-  });
+  if (heroStack) {
+    liveObserver.observe(heroStack);
+    // A pilha do topo troca de conteúdo: liga o modo ao vivo na nova camada.
+    new MutationObserver(() => {
+      heroStack.querySelectorAll("[data-live-src]").forEach(goLive);
+    }).observe(heroStack, { childList: true });
+  }
 }

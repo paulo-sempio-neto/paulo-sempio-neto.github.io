@@ -1,0 +1,11 @@
+{
+  "$comment": "Sites capturados automaticamente. Para incluir o Ganho Certo, preencha a url. waitFor é um seletor que só existe quando a tela está pronta; se não aparecer, a captura antiga é mantida.",
+  "captures": [
+    { "file": "ganho-certo-landing", "url": "", "waitFor": "h1", "viewport": "desktop" },
+    { "file": "lexin-home", "url": "https://lexiningles.com.br/", "waitFor": "h1", "viewport": "desktop" },
+    { "file": "lexin-celular", "url": "https://lexiningles.com.br/", "waitFor": "h1", "viewport": "mobile" },
+    { "file": "api-sentinel-radar", "url": "https://api-sentinel-pi.vercel.app/", "waitFor": ".erow, .empty", "viewport": "desktop" },
+    { "file": "api-sentinel-celular", "url": "https://api-sentinel-pi.vercel.app/", "waitFor": ".erow, .empty", "viewport": "mobile" },
+    { "file": "gondola-cadastro", "url": "https://product-management-system-beige.vercel.app/cadastro", "waitFor": ".auth__form", "viewport": "desktop" }
+  ]
+}
